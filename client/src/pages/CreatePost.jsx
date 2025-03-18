@@ -1,9 +1,36 @@
 import { Button, FileInput, Select, TextInput } from "flowbite-react";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 export default function CreatePost() {
+  // const [file, setFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageFileUrl, setImageFileUrl] = useState(null);
+  const [formData, setFormData] = useState({});
+  const filePickerRef = useRef();
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    } else {
+      setImageFile(file);
+      setImageFileUrl(URL.createObjectURL(file));
+    }
+  };
+
+  useEffect(() => {
+    if (imageFile) {
+      uploadImage();
+    }
+  }, [imageFile]);
+
+  const uploadImage = () => {
+    setFormData({ ...formData, imageFileUrl });
+  };
+  console.log(formData);
+
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
@@ -24,15 +51,12 @@ export default function CreatePost() {
           </Select>
         </div>
         <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
-          <FileInput type="file" accept="/image/*" />
-          <Button
-            type="button"
-            gradientDuoTone="purpleToBlue"
-            size="sm"
-            outline
-          >
-            Upload image
-          </Button>
+          <FileInput
+            type="file"
+            accept="/image/*"
+            onChange={handleImageChange}
+            ref={filePickerRef}
+          />
         </div>
         <ReactQuill
           theme="snow"
